@@ -8,9 +8,6 @@ defmodule Mixpanel.Client do
 
   require Logger
 
-  @track_endpoint "https://api.mixpanel.com/track"
-  @engage_endpoint "https://api.mixpanel.com/engage"
-
   def start_link(config, opts \\ []) do
     GenServer.start_link(__MODULE__, {:ok, config}, opts)
   end
@@ -45,7 +42,7 @@ defmodule Mixpanel.Client do
       |> Jason.encode!()
       |> :base64.encode()
 
-    case HTTPoison.get(@track_endpoint, [], params: [data: data]) do
+    case HTTPoison.get("#{base_url()}/track", [], params: [data: data]) do
       {:ok, %HTTPoison.Response{status_code: 200, body: "1"}} ->
         :ok
 
@@ -67,7 +64,7 @@ defmodule Mixpanel.Client do
       |> Jason.encode!()
       |> :base64.encode()
 
-    case HTTPoison.get(@engage_endpoint, [], params: [data: data]) do
+    case HTTPoison.get("#{base_url()}/engage", [], params: [data: data]) do
       {:ok, %HTTPoison.Response{status_code: 200, body: "1"}} ->
         :ok
 
@@ -84,4 +81,6 @@ defmodule Mixpanel.Client do
   def handle_cast(_request, %{active: false} = state) do
     {:noreply, state}
   end
+
+  defp base_url, do: Application.get_env(:mixpanel_api_ex, :base_url)
 end
