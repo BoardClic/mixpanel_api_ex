@@ -82,5 +82,5 @@ defmodule Mixpanel.Client do
     {:noreply, state}
   end
 
-  defp base_url, do: Application.get_env(:mixpanel_api_ex, :base_url)
+  defp base_url, do: Application.get_env(:mixpanel_api_ex, :config)[:base_url]
 end
